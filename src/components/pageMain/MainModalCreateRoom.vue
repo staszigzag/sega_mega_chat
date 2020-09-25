@@ -18,6 +18,7 @@
                   :rules="[rules.required, rules.onlyString, rules.maxLength]"
                   v-model.trim="nameRoom"
                   clearable
+                  @keydown.prevent.enter="handlerClickCreate"
                   autocomplete="off"
                   prepend-icon="mdi-comment-processing-outline"
                   type="text"

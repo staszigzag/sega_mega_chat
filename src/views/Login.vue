@@ -28,6 +28,7 @@
                         :rules="[rules.required, rules.onlyString, rules.maxLength]"
                         :counter="settings.maxUserNameLength"
                         clearable
+                        @keydown.prevent.enter="handlerClickLogin"
                         autocomplete="off"
                         prepend-icon="mdi-account"
                         type="text"

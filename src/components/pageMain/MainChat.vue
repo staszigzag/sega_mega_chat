@@ -47,8 +47,8 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
-import { required, creatorMaxLength, creatorMinLength, onlyString } from '../../utility/validRules'
+import { mapState, mapActions } from 'vuex'
+import { required, creatorMaxLength, onlyString } from '../../utility/validRules'
 import Message from './MainChat/Message'
 
 export default {
@@ -87,7 +87,6 @@ export default {
     handleClickSend() {
       this.$refs.form.validate()
       if (!this.valid) return
-      console.log(this.msgText)
       this.sendSocket({
         room: this.currentRoom.name,
         text: this.msgText
