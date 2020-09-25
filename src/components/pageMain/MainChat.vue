@@ -27,14 +27,15 @@
                   type="text"
                   :counter="settings.maxMessageLength"
                   :rules="[rules.required, rules.onlyString, rules.maxLength]"
-                  v-model="msgText"
+                  v-model.trim="msgText"
+                  @keydown.prevent.enter="handleClickSend"
                   placeholder="Ваше сообщение"
                   outlined
                 ></v-text-field>
               </v-form>
             </v-col>
-            <v-col cols="auto" >
-              <v-btn @click="handleClickSend()" class=""  x-large color="primary">
+            <v-col cols="auto">
+              <v-btn @click="handleClickSend" x-large color="primary">
                 <v-icon large>mdi-send</v-icon>
               </v-btn>
             </v-col>
@@ -86,6 +87,7 @@ export default {
     handleClickSend() {
       this.$refs.form.validate()
       if (!this.valid) return
+      console.log(this.msgText)
       this.sendSocket({
         room: this.currentRoom.name,
         text: this.msgText

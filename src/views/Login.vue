@@ -25,13 +25,13 @@
                   <v-card-text>
                     <v-form ref="form" v-model="valid">
                       <v-text-field
-                        :rules="[rules.required, rules.onlyString, rules.maxLength, rules.minLength]"
+                        :rules="[rules.required, rules.onlyString, rules.maxLength]"
                         :counter="settings.maxUserNameLength"
                         clearable
                         autocomplete="off"
                         prepend-icon="mdi-account"
                         type="text"
-                        v-model="name"
+                        v-model.trim="name"
                       ></v-text-field>
                     </v-form>
                   </v-card-text>
@@ -47,7 +47,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { required, creatorMaxLength, creatorMinLength, onlyString } from '../utility/validRules'
+import { required, creatorMaxLength, onlyString } from '../utility/validRules'
 
 export default {
   name: 'Login',
@@ -76,7 +76,6 @@ export default {
       this.rules.required = required
       this.rules.onlyString = onlyString
       this.rules.maxLength = creatorMaxLength(this.settings.maxUserNameLength)
-      this.rules.minLength = creatorMinLength(this.settings.minLength)
     }
   }
 }

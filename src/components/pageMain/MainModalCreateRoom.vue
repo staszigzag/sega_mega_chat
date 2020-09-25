@@ -15,8 +15,8 @@
               <v-form ref="form" v-model="valid">
                 <v-text-field
                   :counter="settings.maxRoomTitleLength"
-                  :rules="[rules.required, rules.onlyString, rules.maxLength, rules.minLength]"
-                  v-model="nameRoom"
+                  :rules="[rules.required, rules.onlyString, rules.maxLength]"
+                  v-model.trim="nameRoom"
                   clearable
                   autocomplete="off"
                   prepend-icon="mdi-comment-processing-outline"
@@ -34,7 +34,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
-import { required, creatorMaxLength, creatorMinLength, onlyString } from '../../utility/validRules'
+import { required, creatorMaxLength, onlyString } from '../../utility/validRules'
 import NaneModal from '../NaneModal'
 
 export default {
@@ -76,7 +76,6 @@ export default {
       this.rules.required = required
       this.rules.onlyString = onlyString
       this.rules.maxLength = creatorMaxLength(this.settings.maxRoomTitleLength)
-      this.rules.minLength = creatorMinLength(this.settings.minLength)
     }
   }
 }

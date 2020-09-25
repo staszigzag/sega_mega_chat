@@ -1,4 +1,4 @@
-export const required = v => !!v || 'Это поле обязательно'
+export const required = v => (!!v && !!v.trim()) || 'Это поле обязательно'
 export const onlyString = v => typeof v === 'string' || 'Это поле только для строк'
 
 export const creatorMinLength = n => {
