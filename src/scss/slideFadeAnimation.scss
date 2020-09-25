@@ -1,0 +1,39 @@
+$time:  .25s;
+$delta: 50px;
+$opacity: 0;
+$scaleMin: 0.95;
+$scaleMax: 1.1;
+
+//анимация слайда
+.slide-fade-leave-active, .slide-fade-enter-active{
+  transition: all $time ;
+}
+.slide-fade-enter {
+  transform: translateX(-$delta);
+  opacity: $opacity;
+}
+.slide-fade-leave-to {
+  transform: translateX($delta);
+  opacity: $opacity;
+}
+
+//анимация проявления
+.opacity-fade-leave-active, .opacity-fade-enter-active {
+  transition: all $time ;
+}
+.opacity-fade-enter {
+  transform: scale($scaleMin);
+  opacity: $opacity;
+}
+.opacity-fade-enter-to {
+  transform: scale(1);
+  opacity: 1;
+}
+.opacity-fade-leave {
+  transform: scale(1);
+  opacity: 1;
+}
+.opacity-fade-leave-to {
+  transform: scale($scaleMin);
+  opacity: $opacity;
+}
