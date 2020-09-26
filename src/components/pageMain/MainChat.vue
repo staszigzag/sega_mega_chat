@@ -84,14 +84,18 @@ export default {
         chat.scrollTop = chat.scrollHeight
       })
     },
-    handleClickSend() {
+    async handleClickSend() {
       this.$refs.form.validate()
       if (!this.valid) return
-      this.sendSocket({
-        room: this.currentRoom.name,
-        text: this.msgText
-      })
-      this.$refs.form.reset()
+      try {
+        await this.sendSocket({
+          room: this.currentRoom.name,
+          text: this.msgText
+        })
+        this.$refs.form.reset()
+      } catch (e) {
+        console.dir(e)
+      }
     },
     initRules() {
       this.rules.required = required
@@ -105,7 +109,7 @@ export default {
 
 <style lang="scss" scoped>
   .wrapper{
-    height: 95vh;
+    height: calc(100vh - 60px);
     width: 100%;
     display: flex;
     flex-direction: column;

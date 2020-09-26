@@ -13,7 +13,13 @@
       {{userName}}
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <v-btn outlined dark class="ma-2" @click="handlerClickLogout">
+    <v-btn
+      outlined
+      dark class="ma-2"
+      @click="handlerClickLogout"
+      :disabled="isLoading"
+      :loading="isLoading"
+    >
       выход
       <v-icon right>mdi-exit-to-app</v-icon>
     </v-btn>
@@ -27,6 +33,7 @@ export default {
   name: 'MainHeader',
   data() {
     return {
+      isLoading: false
     }
   },
   computed: {
@@ -40,13 +47,15 @@ export default {
     async handlerClickLogout() {
       const success = await this.confirmUserAction()
       if (!success) return
+      this.isLoading = true
       try {
-        await this.logout()
         // глушим сокет
-        await this.disconnectSocket()
+        this.disconnectSocket()
+        this.logout()
         this.RESET_ROOMS()
-      } finally {
         this.$router.push({ name: 'login' })
+      } finally {
+        this.isLoading = false
       }
     }
   }

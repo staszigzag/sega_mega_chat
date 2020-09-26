@@ -16,43 +16,37 @@ export default {
   actions: {
     async connectSocket({ commit, dispatch }, userName) {
       try {
-        // TODO переподключение
-        const connect = await api.ws.getSocket(userName)
-        await new Promise(resolve => {
-          connect.onopen = () => {
-            // TODO проверить что успешно
-            connect.onmessage = event => {
-              // отдаем в стор на обработку
-              store.dispatch('rooms/processNewMessage', event.data)
-            }
-            ws = connect
-            store.dispatch('notifications/showNotification', { text: messagesNotifications.initSocket })
-            resolve()
-          }
-        })
+        const newWS = api.ws.getSocket(userName)
+        newWS.onmessage = (msg) => {
+          store.dispatch('rooms/processNewMessage', msg)
+        }
+        await newWS.connect()
+        ws = newWS
+        store.dispatch('notifications/showNotification', { text: messagesNotifications.initSocket })
         commit('SET_IS_CONNECT', true)
       } catch (err) {
-        dispatch('disconnectSocket')
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorGetInitSocket, type: 'error' })
-        console.error(err)
+        console.warn(err)
+        throw err
       }
     },
     async sendSocket({ commit, state }, msg) {
       try {
-        // TODO проверка на доставку
+      // TODO проверка на доставку
         msg = JSON.stringify(msg)
-        await ws.send(msg)
+        ws.send(msg)
       } catch (err) {
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorSendSocket, type: 'error' })
-        console.error(err)
+        console.dir(err)
+        throw err
       }
     },
     async disconnectSocket({ commit }) {
       try {
-        await ws.close()
+        if (ws) await ws.disconnect()
         commit('SET_IS_CONNECT', false)
       } catch (err) {
-        console.error(err)
+        console.warn(err)
       }
     }
   }

@@ -1,12 +1,15 @@
 <template>
   <v-app>
+    <nane-top-system-bar />
     <transition appear mode="out-in" name="opacity-fade">
-      <v-progress-linear
+      <v-progress-circular
         v-if="loading"
-        indeterminate
-        height="12"
+        class="ma-auto"
+        size="280"
         color="primary"
-      ></v-progress-linear>
+        width="12"
+        indeterminate
+      ></v-progress-circular>
       <router-view v-else/>
     </transition>
 
@@ -20,6 +23,7 @@
 import { mapActions } from 'vuex'
 import NaneNotifications from './components/NaneNotifications'
 import NaneBottomSheet from './components/NaneBottomSheet'
+import NaneTopSystemBar from './components/NaneTopSystemBar'
 
 export default {
   name: 'App',
@@ -30,15 +34,19 @@ export default {
   },
   components: {
     NaneNotifications,
-    NaneBottomSheet
+    NaneBottomSheet,
+    NaneTopSystemBar
   },
   methods: {
     ...mapActions('rooms', ['getRooms']),
     ...mapActions('settings', ['getSettings']),
-    ...mapActions('auth', ['checkAuth', 'login'])
+    ...mapActions('auth', ['checkAuth', 'login']),
+    ...mapActions('notifications', ['initWatchIsOnline'])
   },
   async created() {
     try {
+      // TODO повторная синхронизация при появлении сети
+      this.initWatchIsOnline()
       await this.getSettings()
       await this.getRooms()
       const userName = await this.checkAuth()

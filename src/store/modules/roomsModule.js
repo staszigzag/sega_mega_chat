@@ -53,7 +53,7 @@ export default {
         commit('SET_ROOMS', rooms)
       } catch (err) {
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorGetRooms, type: 'error' })
-        console.error(err)
+        console.warn(err)
       }
     },
     // локально создаем и делаем активной
@@ -66,10 +66,11 @@ export default {
         commit('SET_CURRENT_ROOM', room)
       } catch (err) {
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorSetRooms, type: 'error' })
-        console.error(err)
+        console.warn(err)
+        throw err
       }
     },
-    // создаем из сокета
+    // создаем рум из сообщения сокета
     async createAutoRoom({ commit }, msg) {
       try {
         const room = new Room({ name: msg.room })
@@ -79,7 +80,7 @@ export default {
         store.dispatch('notifications/showNotification', { text: `${messagesNotifications.createAutoRoom} ${room.name}` })
       } catch (err) {
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorSetRooms, type: 'error' })
-        console.error(err)
+        console.warn(err)
       }
     },
     async processNewMessage({ commit, dispatch, state }, rawMsg) {
@@ -87,38 +88,40 @@ export default {
         const message = new Message(JSON.parse(rawMsg))
         console.info('new messages ', message)
         // ищем доступные для сообщения комнаты
-        const isExist = state.rooms.find(r => r.name === message.room)
-        if (isExist) commit('ADD_NEW_MESSAGE', message)
+        const isExistRooms = state.rooms.find(r => r.name === message.room)
+        if (isExistRooms) commit('ADD_NEW_MESSAGE', message)
         // есле нет то создаем новую
         else dispatch('createAutoRoom', message)
       } catch (err) {
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorProcessMessages, type: 'error' })
-        console.error(err)
+        console.warn(err)
       }
     },
-    async getHistory({ commit }, nameRoom) {
+    async getHistory({ commit }, room) {
       try {
-        const { result } = await api.main.getHistory(nameRoom)
+        // у кастомных комнат в которые не писали, нет последнего сообщения
+        if (!room.lastMessage) return
+        const { result } = await api.main.getHistory(room.name)
         const messages = result.map(m => new Message(m))
-        console.info(`message for ${nameRoom}`, messages)
-        return messages
+        // TODO проверить на дубликат
+        // room.history.push(...messages)
+        room.addMessagesInHistory(...messages)
+        console.info(`message for ${room.name}`, messages)
       } catch (err) {
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorGetHistory, type: 'error' })
-        console.error(err)
+        console.warn(err)
       }
     },
     async initActiveRoom({ commit, dispatch }, room) {
       try {
         if (room.isActive) return
-        const history = await dispatch('getHistory', room.name)
-        // TODO проверить на дубликат
-        // room.history.push(...history)
-        room.addMessagesInHistory(...history)
         commit('ADD_ACTIVE_ROOM', room)
         commit('SET_CURRENT_ROOM', room)
+        await dispatch('getHistory', room)
       } catch (err) {
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorGetMessages, type: 'error' })
-        console.error(err)
+        console.warn(err)
+        throw err
       }
     }
   }

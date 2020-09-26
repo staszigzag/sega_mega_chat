@@ -70,7 +70,7 @@ export default {
       }
     },
     handlerClickClose() {
-      this.nameRoom = ''
+      this.$refs.form.reset()
       this.TOGGLE_SHOW_CREATE_ROOM(false)
     },
     initRules() {

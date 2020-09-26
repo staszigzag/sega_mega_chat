@@ -1,7 +1,11 @@
+import { SocketCustom } from '../models/SocketCustom'
+
 const baseURL = '/ws'
 
-export async function getSocket(userName) {
-  const url = `${process.env.VUE_APP_SOCKET_BASE_URL}${baseURL}?username=${userName}`
-  const ws = await new WebSocket(url)
-  return ws
+export function getSocket(userName) {
+  if (!userName) throw new Error('user name is required')
+  return new SocketCustom({
+    url: `${process.env.VUE_APP_SOCKET_BASE_URL}${baseURL}?username=${userName}`,
+    reconnection: true
+  })
 }

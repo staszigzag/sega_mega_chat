@@ -23,7 +23,6 @@ export default {
         // если сломалось ставим дефолтные
         settings = new Settings()
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorGetSettings, type: 'error' })
-        console.error(err)
       } finally {
         console.info('settings from api', settings)
         commit('SET_SETTINGS', settings)

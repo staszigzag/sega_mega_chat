@@ -11,6 +11,15 @@
         <v-list-item-content>
           <v-list-item-title class="text-uppercase font-weight-medium">Список чатов</v-list-item-title>
         </v-list-item-content>
+        <v-btn
+          v-if="$vuetify.breakpoint.xs"
+          @click="TOGGLE_SHOW_DRAWER(false)"
+          fab
+          small
+          text
+        >
+          <v-icon large>close</v-icon>
+        </v-btn>
       </v-list-item>
       <v-divider />
     </template>

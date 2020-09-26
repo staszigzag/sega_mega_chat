@@ -10,7 +10,8 @@ export default {
     count: 0,
     notifications: [],
     // typesUserActions: TYPES_USER_ACTIONS,
-    userAction: null
+    userAction: null,
+    isShowTopSystemBar: false
   },
   mutations: {
     INCREMENT_COUNT(state) {
@@ -26,9 +27,20 @@ export default {
     },
     SET_USER_ACTION(state, action) {
       state.userAction = action
+    },
+    TOGGLE_SHOW_TOP_SYSTEM_BAR(state, isShow) {
+      state.isShowTopSystemBar = isShow
     }
   },
   actions: {
+    initWatchIsOnline({ commit, state }) {
+      const updateOnlineStatus = () => {
+        commit('TOGGLE_SHOW_TOP_SYSTEM_BAR', !navigator.onLine)
+      }
+      window.addEventListener('online', updateOnlineStatus)
+      window.addEventListener('offline', updateOnlineStatus)
+      updateOnlineStatus()
+    },
     showNotification({ commit, state }, { type, text = '' }) {
       let color = BASE_COLOR
       if (type === 'error') color = 'error'
