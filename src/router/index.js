@@ -25,7 +25,7 @@ const routes = [
 
 const router = new VueRouter({
   mode: 'history',
-  base: process.env.BASE_URL,
+  base: process.env.VUE_APP_BASE_URL_SUB || process.env.BASE_URL,
   routes
 })
 // TODO универсальная проверка на логин

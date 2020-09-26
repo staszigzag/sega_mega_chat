@@ -12,6 +12,7 @@ npm install
  - VUE_APP_API_BASE_URL=https://nane.tada.team
  - VUE_APP_SOCKET_BASE_URL=wss://nane.tada.team
  Опционально:
+ - VUE_APP_BASE_URL_SUB
  - VUE_APP_PRIMARY_COLOR
  - VUE_APP_PRIMARY_COLOR
 ```
