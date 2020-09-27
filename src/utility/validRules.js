@@ -7,3 +7,6 @@ export const creatorMinLength = n => {
 export const creatorMaxLength = n => {
   return v => (!!v && v.length <= n) || 'Максимальное количество символов ' + n
 }
+export const creatorExistRoomName = rooms => {
+  return v => !rooms.find(r => r.name === v) || 'Комната с таким именем уже существует'
+}

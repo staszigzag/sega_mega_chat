@@ -25,7 +25,7 @@
                   <v-card-text>
                     <v-form ref="form" v-model="valid">
                       <v-text-field
-                        :rules="[rules.required, rules.onlyString, rules.maxLength]"
+                        :rules="[...rules]"
                         :counter="settings.maxUserNameLength"
                         clearable
                         @keydown.prevent.enter="handlerClickLogin"
@@ -48,14 +48,14 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { required, creatorMaxLength, onlyString } from '../utility/validRules'
+import { required, creatorMaxLength, onlyString, creatorExistRoomName } from '../utility/validRules'
 
 export default {
   name: 'Login',
   data: () => ({
     name: '',
     valid: false,
-    rules: {}
+    rules: []
   }),
   computed: {
     ...mapState('auth', ['userName']),
@@ -74,9 +74,11 @@ export default {
       this.$router.push({ name: 'main' })
     },
     initRules() {
-      this.rules.required = required
-      this.rules.onlyString = onlyString
-      this.rules.maxLength = creatorMaxLength(this.settings.maxUserNameLength)
+      this.rules.push(
+        required,
+        onlyString,
+        this.rules.maxLength = creatorMaxLength(this.settings.maxUserNameLength)
+      )
     }
   }
 }

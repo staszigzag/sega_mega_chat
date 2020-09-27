@@ -19,16 +19,17 @@
 
 <script>
 import { mapState } from 'vuex'
+import { Message } from '../../../models/Message'
 
 export default {
-  name: 'Message',
+  name: 'MainChatMessage',
   data() {
     return {
     }
   },
   props: {
     msg: {
-      type: Object,
+      type: Message,
       required: true
     }
   },

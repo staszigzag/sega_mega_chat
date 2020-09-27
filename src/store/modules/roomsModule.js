@@ -115,9 +115,9 @@ export default {
     async initActiveRoom({ commit, dispatch }, room) {
       try {
         if (room.isActive) return
+        await dispatch('getHistory', room)
         commit('ADD_ACTIVE_ROOM', room)
         commit('SET_CURRENT_ROOM', room)
-        await dispatch('getHistory', room)
       } catch (err) {
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorGetMessages, type: 'error' })
         console.warn(err)

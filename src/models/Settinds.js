@@ -3,7 +3,8 @@ export class Settings {
     this.maxMessageLength = data.max_message_length || 10500
     this.maxRoomTitleLength = data.max_room_title_length || 50
     this.maxUserNameLength = data.max_username_length || 50
-    this.minLength = data.min_length || 1
     this.uptime = data.uptime
+    this.minLength = 1
+    this.sizeChunkMessages = 20
   }
 }

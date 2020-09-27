@@ -15,7 +15,7 @@
               <v-form ref="form" v-model="valid">
                 <v-text-field
                   :counter="settings.maxRoomTitleLength"
-                  :rules="[rules.required, rules.onlyString, rules.maxLength]"
+                  :rules="[...rules]"
                   v-model.trim="nameRoom"
                   clearable
                   @keydown.prevent.enter="handlerClickCreate"
@@ -35,7 +35,7 @@
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
-import { required, creatorMaxLength, onlyString } from '../../utility/validRules'
+import { required, creatorMaxLength, onlyString, creatorExistRoomName } from '../../utility/validRules'
 import NaneModal from '../NaneModal'
 
 export default {
@@ -44,7 +44,7 @@ export default {
     return {
       nameRoom: '',
       valid: false,
-      rules: {}
+      rules: []
     }
   },
   components: {
@@ -52,6 +52,7 @@ export default {
   },
   computed: {
     ...mapState('settings', ['settings']),
+    ...mapState('rooms', ['rooms']),
     ...mapState('modals', ['isShowCreateRoom'])
   },
   created() {
@@ -74,9 +75,12 @@ export default {
       this.TOGGLE_SHOW_CREATE_ROOM(false)
     },
     initRules() {
-      this.rules.required = required
-      this.rules.onlyString = onlyString
-      this.rules.maxLength = creatorMaxLength(this.settings.maxRoomTitleLength)
+      this.rules.push(
+        required,
+        onlyString,
+        creatorMaxLength(this.settings.maxRoomTitleLength),
+        creatorExistRoomName(this.rooms)
+      )
     }
   }
 }

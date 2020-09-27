@@ -6,13 +6,13 @@
     >
       <p class="hint text-center body-1 grey--text text--lighten-1" v-if="!currentRoom">Нет выбранного чата...</p>
       <div v-else class="wrapper">
-        <div ref="chat" class="chat">
-          <v-row no-gutters >
-            <v-col cols="12" :key="idx" v-for="(msg, idx) in currentRoom.history">
-              <message :msg="msg" />
-            </v-col>
-          </v-row>
-        </div>
+<!--        все активные комнаты держим живыми, и переключаемся к нужной-->
+        <main-chat-area
+          v-for="(r, idx) in activeRooms"
+          v-show="r.name === currentRoom.name"
+          :room="r"
+          :key="idx"
+        />
         <div class="input-send">
           <v-row
             dense
@@ -26,7 +26,7 @@
                   autocomplete="off"
                   type="text"
                   :counter="settings.maxMessageLength"
-                  :rules="[rules.required, rules.onlyString, rules.maxLength]"
+                  :rules="[...rules]"
                   v-model.trim="msgText"
                   @keydown.prevent.enter="handleClickSend"
                   placeholder="Ваше сообщение"
@@ -49,7 +49,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import { required, creatorMaxLength, onlyString } from '../../utility/validRules'
-import Message from './MainChat/Message'
+import MainChatArea from './MainChat/MainChatArea'
 
 export default {
   name: 'MainChat',
@@ -57,19 +57,20 @@ export default {
     return {
       msgText: '',
       valid: false,
-      rules: {}
+      rules: []
     }
   },
   components: {
-    Message
+    MainChatArea
   },
   computed: {
     ...mapState('rooms', ['currentRoom']),
+    ...mapState('rooms', ['activeRooms']),
     ...mapState('settings', ['settings'])
   },
   watch: {
-    'currentRoom.history'() {
-      this.scrollToBottom()
+    currentRoom() {
+      if (this.$refs.form) this.$refs.form.resetValidation()
     }
   },
   created() {
@@ -77,13 +78,6 @@ export default {
   },
   methods: {
     ...mapActions('socket', ['sendSocket']),
-    scrollToBottom() {
-      // прокрутка к последнему сообщению
-      this.$nextTick(() => {
-        const chat = this.$refs.chat
-        chat.scrollTop = chat.scrollHeight
-      })
-    },
     async handleClickSend() {
       this.$refs.form.validate()
       if (!this.valid) return
@@ -98,10 +92,12 @@ export default {
       }
     },
     initRules() {
-      this.rules.required = required
-      this.rules.onlyString = onlyString
-      this.rules.maxLength = creatorMaxLength(this.settings.maxMessageLength)
-      // this.rules.minLength = creatorMinLength(this.settings.minLength)
+      this.rules.push(
+        required,
+        onlyString,
+        creatorMaxLength(this.settings.maxMessageLength)
+        // creatorMinLength(this.settings.minLength)
+      )
     }
   }
 }
@@ -113,11 +109,6 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: column;
-  }
-  .chat{
-    height:100%;
-    overflow-y: scroll;
-    overflow-x: hidden;
   }
   .hint{
     width: 100%;
