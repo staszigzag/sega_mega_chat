@@ -14,10 +14,12 @@
         {{ n.text }}
         <template v-slot:action >
           <v-btn
-            text
             @click="DELETE_NOTIFICATION(n)"
+            fab
+            small
+            text
           >
-            Закрыть
+            <v-icon large>close</v-icon>
           </v-btn>
         </template>
       </v-snackbar>

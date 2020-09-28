@@ -48,7 +48,7 @@ export default {
       // TODO повторная синхронизация при появлении сети
       this.initWatchIsOnline()
       await this.getSettings()
-      await this.getRooms()
+      this.getRooms()
       const userName = await this.checkAuth()
 
       if (userName) {

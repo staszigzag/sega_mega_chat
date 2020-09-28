@@ -7,6 +7,7 @@
           :distance="300"
           spinner="waveDots"
           class="align-self-center"
+          :identifier="scrollId"
           @infinite="handlerInfiniteScroll">
           <p slot="no-more" class="text-center body-1 grey--text text--lighten-1">Начало истории сообщений</p>
         </infinite-loading>
@@ -31,8 +32,8 @@ export default {
     return {
       messagesForView: [],
       currentCountChunkMessages: 1,
-      lengthHistoryMessages: 0,
-      isNextMessages: true
+      isNextMessages: true,
+      scrollId: Date.now()
     }
   },
   components: {
@@ -49,23 +50,30 @@ export default {
     ...mapState('settings', ['settings'])
   },
   watch: {
-    'room.history'() {
+    'room.lastMessage'(msg) {
+      // if (!this.room.isGetHistory) return
       // отслеживаем новые сообщения
-      const newMsg = this.room.history[this.room.history.length - 1]
-      this.messagesForView.push(newMsg)
+      this.messagesForView.push(msg)
+      this.scrollToBottom()
+    },
+    // ждем когда появится история
+    'room.isGetHistory'(val) {
+      if (!val) return
+      this.isNextMessages = true
+      this.pushNewChunkMessages()
+      // сброс InfiniteLoading
+      this.scrollId = Date.now()
       this.scrollToBottom()
     }
   },
-  created() {
-    // запоминаем длину истории,что бы при получении новых сооющений, они не влияли на InfiniteScroll
-    this.lengthHistoryMessages = this.room.history.length
-    this.pushNewChunkMessages()
-    this.scrollToBottom()
-  },
   methods: {
     pushNewChunkMessages() {
-      let start = this.lengthHistoryMessages - (this.settings.sizeChunkMessages * this.currentCountChunkMessages)
-      const end = this.lengthHistoryMessages - (this.settings.sizeChunkMessages * (this.currentCountChunkMessages - 1))
+      if (!this.room.history.length) {
+        this.isNextMessages = false
+        return
+      }
+      let start = this.room.history.length - (this.settings.sizeChunkMessages * this.currentCountChunkMessages)
+      const end = this.room.history.length - (this.settings.sizeChunkMessages * (this.currentCountChunkMessages - 1))
       if (start < 0) {
         start = 0
         this.isNextMessages = false
@@ -85,7 +93,7 @@ export default {
       }
     },
     scrollToBottom() {
-      // прокрутка к последнему сообщению
+      // прокрутка к последнему сообщению, не работает в v-show="false"
       this.$nextTick(() => {
         const chat = this.$refs.chat
         chat.scrollTop = chat.scrollHeight

@@ -39,7 +39,7 @@ export default {
     async init() {
       if (this.userName) {
         // поднимаем сокет только для зологининых юзеров
-        await this.connectSocket(this.userName)
+        this.connectSocket(this.userName)
       } else {
         this.$router.push({ name: 'login' })
       }

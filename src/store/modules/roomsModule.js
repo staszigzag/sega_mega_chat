@@ -13,7 +13,9 @@ export default {
   },
   mutations: {
     SET_ROOMS(state, rooms) {
-      state.rooms = rooms
+      // комнаты которые были созданы, но в них не чего не писали, и их в комнатах с сервера еще нет
+      const customRooms = state.rooms.filter(r => !r.lastMessage)
+      state.rooms = [...rooms, ...customRooms]
     },
     ADD_ROOM(state, room) {
       state.rooms.push(room)
@@ -40,20 +42,21 @@ export default {
       // на случай одинаковых комнат берем фильтр
       const rooms = state.activeRooms.filter(r => r.name === msg.room)
       rooms.forEach(r => {
-        r.addMessagesInHistory(msg)
+        r.addMessageInStore(msg)
       })
     }
   },
   actions: {
-    async getRooms({ commit }) {
+    async getRooms({ commit, dispatch }) {
       try {
         const { result } = await api.main.getRooms()
         const rooms = result.map(r => new Room(r))
         console.info('rooms from api', rooms)
         commit('SET_ROOMS', rooms)
+        store.dispatch('notifications/showNotification', { text: messagesNotifications.getRooms })
       } catch (err) {
-        store.dispatch('notifications/showNotification', { text: messagesNotifications.errorGetRooms, type: 'error' })
         console.warn(err)
+        setTimeout(() => dispatch('getRooms'), store.state.settings.settings.reconnectionTime)
       }
     },
     // локально создаем и делаем активной
@@ -74,7 +77,7 @@ export default {
     async createAutoRoom({ commit }, msg) {
       try {
         const room = new Room({ name: msg.room })
-        room.lastMessage = msg
+        room.addMessageInStore(msg)
         console.info('new auto room from api', room)
         commit('ADD_ROOM', room)
         store.dispatch('notifications/showNotification', { text: `${messagesNotifications.createAutoRoom} ${room.name}` })
@@ -97,27 +100,26 @@ export default {
         console.warn(err)
       }
     },
-    async getHistory({ commit }, room) {
+    async getHistory({ commit, dispatch }, room) {
       try {
         // у кастомных комнат в которые не писали, нет последнего сообщения
         if (!room.lastMessage) return
         const { result } = await api.main.getHistory(room.name)
         const messages = result.map(m => new Message(m))
-        // TODO проверить на дубликат
-        // room.history.push(...messages)
-        room.addMessagesInHistory(...messages)
+        room.addMessagesInHistory(messages)
         console.info(`message for ${room.name}`, messages)
+        store.dispatch('notifications/showNotification', { text: `${messagesNotifications.getHistory} ${room.name}` })
       } catch (err) {
-        store.dispatch('notifications/showNotification', { text: messagesNotifications.errorGetHistory, type: 'error' })
         console.warn(err)
+        setTimeout(() => dispatch('getHistory', room), store.state.settings.settings.reconnectionTime)
       }
     },
     async initActiveRoom({ commit, dispatch }, room) {
       try {
         if (room.isActive) return
-        await dispatch('getHistory', room)
         commit('ADD_ACTIVE_ROOM', room)
         commit('SET_CURRENT_ROOM', room)
+        dispatch('getHistory', room)
       } catch (err) {
         store.dispatch('notifications/showNotification', { text: messagesNotifications.errorGetMessages, type: 'error' })
         console.warn(err)

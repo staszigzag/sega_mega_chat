@@ -6,5 +6,6 @@ export class Settings {
     this.uptime = data.uptime
     this.minLength = 1
     this.sizeChunkMessages = 20
+    this.reconnectionTime = 500
   }
 }
