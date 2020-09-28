@@ -3,6 +3,7 @@ import store from '../index'
 import messagesNotifications from '../../utility/messagesNotifications'
 import { Room } from '../../models/Room'
 import { Message } from '../../models/Message'
+import { validLettersAndNumbers } from '../../utility/validRules'
 
 export default {
   namespaced: true,
@@ -101,6 +102,10 @@ export default {
       }
     },
     async getHistory({ commit, dispatch }, room) {
+      if (!validLettersAndNumbers(room.name)) {
+        store.dispatch('notifications/showNotification', { text: messagesNotifications.errorValidRoomName, type: 'error' })
+        return
+      }
       try {
         // у кастомных комнат в которые не писали, нет последнего сообщения
         if (!room.lastMessage) return

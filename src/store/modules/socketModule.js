@@ -1,6 +1,7 @@
 import api from '../../api'
 import store from '../index'
 import messagesNotifications from '../../utility/messagesNotifications'
+import { validLettersAndNumbers } from '../../utility/validRules'
 
 let ws
 export default {
@@ -15,6 +16,10 @@ export default {
   },
   actions: {
     async connectSocket({ commit, dispatch }, userName) {
+      if (!validLettersAndNumbers(userName)) {
+        store.dispatch('notifications/showNotification', { text: messagesNotifications.errorValidUserName, type: 'error' })
+        return
+      }
       try {
         const newWS = api.ws.getSocket(userName)
         newWS.onmessage = (msg) => {
