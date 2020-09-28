@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
 import MainChatMessage from './MainChatMessage'
 import InfiniteLoading from 'vue-infinite-loading'
 import { Room } from '../../../models/Room'
@@ -108,6 +108,5 @@ export default {
     height:100%;
     overflow-y: scroll;
     overflow-x: hidden;
-    border: 1px solid aqua;
   }
 </style>

@@ -48,7 +48,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { required, creatorMaxLength, onlyString, creatorExistRoomName } from '../utility/validRules'
+import { required, creatorMaxLength, onlyString } from '../utility/validRules'
 
 export default {
   name: 'Login',
