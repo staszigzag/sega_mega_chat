@@ -1,5 +1,5 @@
 export const required = v => (!!v && !!v.trim()) || 'Это поле обязательно'
-export const onlyString = v => typeof v === 'string' || 'Это поле только для строк'
+export const onlyString = v => (typeof v === 'string' && /^[а-яА-ЯёЁa-zA-Z0-9]+$/.test(v)) || 'Это поле только для букв и цифр'
 
 export const creatorMinLength = n => {
   return v => (!!v && v.length >= n) || 'Минимальное количество символов ' + n

@@ -48,7 +48,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import { required, creatorMaxLength, onlyString } from '../../utility/validRules'
+import { required, creatorMaxLength } from '../../utility/validRules'
 import MainChatArea from './MainChat/MainChatArea'
 
 export default {
@@ -94,7 +94,6 @@ export default {
     initRules() {
       this.rules.push(
         required,
-        onlyString,
         creatorMaxLength(this.settings.maxMessageLength)
         // creatorMinLength(this.settings.minLength)
       )
