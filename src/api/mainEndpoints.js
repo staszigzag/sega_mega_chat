@@ -11,6 +11,6 @@ export async function getRooms() {
   return data
 }
 export async function getHistory(name) {
-  const { data } = await axios.get(`${baseURL}rooms/${name}/history`)
+  const { data } = await axios.get(`${baseURL}rooms/${encodeURIComponent(name)}/history`)
   return data
 }
