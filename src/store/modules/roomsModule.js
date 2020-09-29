@@ -77,7 +77,7 @@ export default {
     async createAutoRoom({ commit }, msg) {
       try {
         const room = new Room({ name: msg.room })
-        room.addMessageInStore(msg)
+        room.lastMessage = msg
         console.info('new auto room from api', room)
         commit('ADD_ROOM', room)
         store.dispatch('notifications/showNotification', { text: `${messagesNotifications.createAutoRoom} ${room.name}` })
@@ -102,8 +102,6 @@ export default {
     },
     async getHistory({ commit, dispatch }, room) {
       try {
-        // у кастомных комнат в которые не писали, нет последнего сообщения
-        if (!room.lastMessage) return
         const { result } = await api.main.getHistory(room.name)
         const messages = result.map(m => new Message(m))
         room.addMessagesInHistory(messages)
